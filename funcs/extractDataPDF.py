@@ -1,5 +1,15 @@
 # Falta testar algumas funções
 from funcs.imports import *
+
+def main_menu():
+    #windows: os.system("cls")
+    #os.system("clear")
+    print("1 - Extrair Imagens")
+    print("2 - Extrair Textos paginas separdas")
+    print("3 - Extrair Textos paginas em um arquivo txt")
+    print("4 - Extrair Tabelas")
+    print("5 - Sair")
+    
 def carregar_pdf(nome_pdf):
     Pdf = PdfReader(nome_pdf)
     return Pdf
@@ -57,6 +67,7 @@ def pdf_em_vetor2(caminho):
     return textos
 
 def pdf_imagens(caminho):
+    imagem = [] #vetor com todas as imagens em forma de matriz
     arquivos = listdir(caminho)
     #Extrair imagens de varios pdf em uma pasta
     for i in range(len(arquivos)):
@@ -71,7 +82,7 @@ def pdf_imagens(caminho):
             image_list = page.getImageList()
             
             if image_list:
-                print(f"Foram encontardas {len(image_list)} imagens na página; {page_index+1}")
+                print(f"{len(image_list)} imagens encontradas na página {page_index+1}")
             else:
                 print("Nenhuma imagem encontrada na página", page_index+1)
                 
@@ -80,16 +91,18 @@ def pdf_imagens(caminho):
                 xref = img[0]
                 # 
                 base_image = pdf_file.extractImage(xref)
-                image_bytes = base_image["imagem"]
+                image_bytes = base_image["image"]
                 # 
                 image_ext = base_image["ext"]
                 #
                 image = Image.open(io.BytesIO(image_bytes))
                 #
-                image.save(open(f"image{page_index+1}_{image_index}.{image_ext}", "wb"))
-                img_name = 'image' + str(page_index+1) + '_' + str(image_index) + '.' + str(image_ext)
+                image.save(open(f"imagem{page_index+1}_{image_index}.{image_ext}", "wb"))
+                img_name = 'imagem' + str(page_index+1) + '_' + str(image_index) + '.' + str(image_ext)
+                imagem.append(imageio.imread(img_name))
                 shutil.move(img_name,dir_img)
-
+                print(f"Extraindo -> {dir_img}/{img_name}")
+    return imagem
 def pdf_tabelas(caminho):
     lista = []
     lista_tabelas = []
